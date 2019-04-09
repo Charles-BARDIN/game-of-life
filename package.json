@@ -6,8 +6,11 @@
   "scripts": {
     "pretest": "npm run -s build:t",
     "test": "mocha dist",
+    "prebuild": "npm run -s clean",
     "build": "tsc",
-    "build:t": "tsc --project ./tsconfig.spec.json"
+    "prebuild:t": "npm run -s clean",
+    "build:t": "tsc --project ./tsconfig.spec.json",
+    "clean": "rimraf ./dist/"
   },
   "repository": {
     "type": "git",
@@ -25,6 +28,7 @@
     "@types/mocha": "^5.2.6",
     "chai": "^4.2.0",
     "mocha": "^6.1.2",
+    "rimraf": "^2.6.3",
     "typescript": "^3.4.2"
   }
 }
