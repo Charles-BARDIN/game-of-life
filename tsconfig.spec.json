@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "allowUnusedLabels": false,
+        "alwaysStrict": true,
+        "declaration": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "outDir": "dist/",
+        "target": "esnext"
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
