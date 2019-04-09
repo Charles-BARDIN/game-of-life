@@ -2,15 +2,18 @@
   "name": "game-of-life",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
     "pretest": "npm run -s build:t",
-    "test": "mocha dist",
+    "test": "mocha .tmp/",
+    "posttest": "npm run -s clean",
     "prebuild": "npm run -s clean",
-    "build": "tsc",
+    "build": "tsc && babel .tmp/ --out-file ./index.js --presets=@babel/env",
+    "postbuild": "npm run -s clean:t",
     "prebuild:t": "npm run -s clean",
     "build:t": "tsc --project ./tsconfig.spec.json",
-    "clean": "rimraf ./dist/"
+    "clean": "npm run -s clean:t && rimraf ./index.js",
+    "clean:t": "rimraf ./.tmp/"
   },
   "repository": {
     "type": "git",
@@ -24,11 +27,17 @@
   },
   "homepage": "https://github.com/Charles-BARDIN/game-of-life#readme",
   "devDependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
     "chai": "^4.2.0",
     "mocha": "^6.1.2",
     "rimraf": "^2.6.3",
     "typescript": "^3.4.2"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.4.3"
   }
 }
