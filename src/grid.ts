@@ -4,6 +4,11 @@ export class Grid {
     private _grid: Cell[][]
     private _aliveCellsPositions: GridPosition[] = []
 
+    private _onCellChange: (row: number, column: number, isAlive: boolean) => void
+    public set onCellChange(onCellChange: (row: number, column: number, isAlive: boolean) => void) {
+        this._onCellChange = onCellChange
+    }
+
     constructor(private _dimensions: GridDimensions) {
         this._grid = Array
             .from({ length: this._dimensions.height })
@@ -59,6 +64,10 @@ export class Grid {
 
         cell.kill()
         this._aliveCellsPositions.splice(positionIndex, 1)
+
+        if(this._onCellChange) {
+            this.onCellChange(position.row, position.column, false)
+        }
     }
 
     public giveLifeToCell(position: GridPosition) {
@@ -76,6 +85,10 @@ export class Grid {
 
         cell.giveLife()
         this._aliveCellsPositions.push(position)
+        
+        if(this._onCellChange) {
+            this.onCellChange(position.row, position.column, true)
+        }
     }
 
     public isAlive(position: GridPosition): boolean {

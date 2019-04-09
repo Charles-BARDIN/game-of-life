@@ -12,6 +12,14 @@ export class GameRunner {
     private _intervalRef: number
     private _hasStarted = false
 
+    private _onCellChange: (row: number, column: number, isAlive: boolean) => void
+    public set onCellChange(onCellChange: (row: number, column: number, isAlive: boolean) => void) {
+        this._onCellChange = onCellChange
+        if(this.grid) {
+            this.grid.onCellChange = this._onCellChange
+        }
+    }
+
     private get _isRunning(): boolean {
         return this._intervalRef == null
     }
@@ -23,6 +31,7 @@ export class GameRunner {
     public createNewGrid(dimensions: GridDimensions) {
         this._dimensions = dimensions
         this.grid = new Grid(this._dimensions)
+        this.grid.onCellChange = this._onCellChange
     }
 
     public giveLifeToCell(position: GridPosition) {
