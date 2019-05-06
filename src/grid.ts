@@ -30,20 +30,36 @@ export class Grid {
         const neighbours: GridPosition[] = []
         const { row, column } = position
 
-        if(row < this._grid.length - 1) {
-            neighbours.push({ row: row + 1, column: column })
+        if (row < this._grid.length - 1) {
+            neighbours.push({ row: row + 1, column: column });
         }
 
-        if(row > 0) {
-            neighbours.push({ row: row - 1, column: column })
+        if (row > 0) {
+            neighbours.push({ row: row - 1, column: column });
         }
 
-        if(column < this._grid[row].length - 1) {
-            neighbours.push({ row: row, column: column + 1 })
+        if (column < this._grid[row].length - 1) {
+            neighbours.push({ row: row, column: column + 1 });
         }
 
-        if(column > 0 && this._grid[row].length > 0) {
-            neighbours.push({ row: row, column: column - 1 })
+        if (column > 0 && this._grid[row].length > 0) {
+            neighbours.push({ row: row, column: column - 1 });
+        }
+
+        if (row < this._grid.length - 1 && column < this._grid[row].length - 1) {
+            neighbours.push({ row: row + 1, column: column + 1 });
+        }
+
+        if (row > 0 && column > 0 && this._grid[row].length > 0) {
+            neighbours.push({ row: row - 1, column: column - 1});
+        }
+
+        if (row < this._grid.length - 1 && column > 0 && this._grid[row].length > 0) {
+            neighbours.push({ row: row + 1, column: column - 1 });
+        }
+
+        if (row > 0 && column < this._grid[row].length - 1) {
+            neighbours.push({ row: row - 1, column: column + 1 });
         }
 
         return neighbours
@@ -52,7 +68,7 @@ export class Grid {
     public killCell(position: GridPosition) {
         const positionIndex = this._aliveCellsPositions
             .findIndex(_position => _position.row === position.row && _position.column === position.column)
-        
+
         if(positionIndex < 0) {
             return
         }
@@ -66,14 +82,14 @@ export class Grid {
         this._aliveCellsPositions.splice(positionIndex, 1)
 
         if(this._onCellChange) {
-            this.onCellChange(position.row, position.column, false)
+            this._onCellChange(position.row, position.column, false)
         }
     }
 
     public giveLifeToCell(position: GridPosition) {
         const positionIndex = this._aliveCellsPositions
             .findIndex(_position => _position.row === position.row && _position.column === position.column)
-    
+
         if(positionIndex >= 0) {
             return
         }
@@ -85,16 +101,16 @@ export class Grid {
 
         cell.giveLife()
         this._aliveCellsPositions.push(position)
-        
+
         if(this._onCellChange) {
-            this.onCellChange(position.row, position.column, true)
+            this._onCellChange(position.row, position.column, true)
         }
     }
 
     public isAlive(position: GridPosition): boolean {
         const positionIndex = this._aliveCellsPositions
             .findIndex(_position => _position.row === position.row && _position.column === position.column)
-        
+
         return positionIndex >= 0
     }
 }

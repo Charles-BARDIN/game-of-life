@@ -15,13 +15,13 @@ export class GameRunner {
     private _onCellChange: (row: number, column: number, isAlive: boolean) => void
     public set onCellChange(onCellChange: (row: number, column: number, isAlive: boolean) => void) {
         this._onCellChange = onCellChange
-        if(this.grid) {
+        if (this.grid) {
             this.grid.onCellChange = this._onCellChange
         }
     }
 
     private get _isRunning(): boolean {
-        return this._intervalRef == null
+        return this._intervalRef != null
     }
 
     private get _isStopped(): boolean {
@@ -35,15 +35,15 @@ export class GameRunner {
     }
 
     public giveLifeToCell(position: GridPosition) {
-        if(this._hasStarted) {
+        if (this._hasStarted) {
             return
         }
-        
+
         this.grid.giveLifeToCell(position)
     }
 
     public killCell(position: GridPosition) {
-        if(this._hasStarted) {
+        if (this._hasStarted) {
             return
         }
 
@@ -51,16 +51,16 @@ export class GameRunner {
     }
 
     public run(config?: { updateInterval: number }) {
-        if(!this.grid) {
+        if (!this.grid) {
             console.error('A new grid must be created first with the createNewGrid method')
             return
         }
 
-        if(this._isRunning) {
+        if (this._isRunning) {
             return
         }
 
-        if(config) {
+        if (config) {
             this._config = config
         }
 
@@ -70,7 +70,7 @@ export class GameRunner {
     }
 
     public pause() {
-        if(this._isStopped) {
+        if (this._isStopped) {
             return
         }
 
@@ -81,7 +81,16 @@ export class GameRunner {
     public stop() {
         this.pause()
         this._hasStarted = false
+        if (this.grid) {
+            [...this.grid.aliveCellsPositions].forEach(posit => {
+                this.grid.killCell(posit)
+            })
+        }
+
         this.grid = new Grid(this._dimensions)
+        if (this._onCellChange) {
+            this.grid.onCellChange = this._onCellChange
+        }
     }
 
     private _runTurn() {
@@ -92,32 +101,33 @@ export class GameRunner {
         aliveCellsPositions
             .forEach(cellPosition => {
                 let aliveNeighboursCount = 0
-                
+
                 this.grid
                     .getNeighboursPositions(cellPosition)
                     .forEach(neighbourPosition => {
-                        if(this.grid.isAlive(neighbourPosition)) {
+                        if (this.grid.isAlive(neighbourPosition)) {
                             aliveNeighboursCount++
                             return
-                        } 
-                        
-                        if(deadCellToAliveNeighbourMap.has(neighbourPosition)) {
-                            deadCellToAliveNeighbourMap.set(neighbourPosition, deadCellToAliveNeighbourMap.get(neighbourPosition) + 1) 
+                        }
+                        const key = Array.from(deadCellToAliveNeighbourMap.keys())
+                            .find(val => val.row === neighbourPosition.row && val.column === neighbourPosition.column)
+                        if (key) {
+                            deadCellToAliveNeighbourMap.set(key, deadCellToAliveNeighbourMap.get(key) + 1)
                         } else {
                             deadCellToAliveNeighbourMap.set(neighbourPosition, 1)
                         }
                     })
 
-                if(!NUMBERS_OF_ALIVE_NEIGHBOURS_REQUIRED_TO_SURVIVE.includes(aliveNeighboursCount)) {
+                if (!NUMBERS_OF_ALIVE_NEIGHBOURS_REQUIRED_TO_SURVIVE.includes(aliveNeighboursCount)) {
                     cellsToKillPositions.push(cellPosition)
                 }
             })
-        
+
         cellsToKillPositions
             .forEach(position => this.grid.killCell(position))
         deadCellToAliveNeighbourMap
             .forEach((count, position) => {
-                if(count === NUMBER_OF_ALIVE_NEIGHBOURS_REQUIRED_TO_GET_LIFE) {
+                if (count === NUMBER_OF_ALIVE_NEIGHBOURS_REQUIRED_TO_GET_LIFE) {
                     this.grid.giveLifeToCell(position)
                 }
             })
